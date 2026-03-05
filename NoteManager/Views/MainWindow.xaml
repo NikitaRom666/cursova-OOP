@@ -1,0 +1,77 @@
+﻿<Window x:Class="NoteManager.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Менеджер нотаток" Height="550" Width="900" Background="#F0F2F5" FontFamily="Segoe UI" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Border Grid.Column="0" Background="White" CornerRadius="10" Padding="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Пошук і фільтри" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" Grid.Row="0"/>
+                <TextBox x:Name="SearchBox" Margin="0,0,0,10" Padding="8" Grid.Row="1" FontSize="14"/>
+                <Button Content="Знайти" Click="SearchButton_Click" Background="#0078D4" Grid.Row="2" Margin="0,0,0,10"/>
+                <UniformGrid Columns="2" Grid.Row="3" Margin="0,0,0,10">
+                    <Button Content="А-Я" Click="SortTitleButton_Click" Background="#6B7280" Margin="0,0,5,0"/>
+                    <Button Content="Нові" Click="SortDateButton_Click" Background="#6B7280" Margin="5,0,0,0"/>
+                </UniformGrid>
+                <ListBox x:Name="NotesList" SelectionChanged="NotesList_SelectionChanged" DisplayMemberPath="Title" Background="#F9FAFB" Grid.Row="4" BorderThickness="1" BorderBrush="#E5E7EB" FontSize="14"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Column="2" Background="White" CornerRadius="10" Padding="20">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Редактор нотатки" FontWeight="Bold" FontSize="20" Margin="0,0,0,15"/>
+                <StackPanel Grid.Row="1">
+                    <TextBlock Text="Назва:" Foreground="#6B7280" Margin="0,0,0,5"/>
+                    <TextBox x:Name="TitleBox" Padding="8" Margin="0,0,0,15" FontSize="14"/>
+                    <TextBlock Text="Теги (через кому):" Foreground="#6B7280" Margin="0,0,0,5"/>
+                    <TextBox x:Name="TagsBox" Padding="8" Margin="0,0,0,15" FontSize="14"/>
+                </StackPanel>
+                <TextBlock Text="Вміст нотатки:" Grid.Row="2" Foreground="#6B7280" Margin="0,0,0,5"/>
+                <TextBox x:Name="ContentBox" Grid.Row="3" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Padding="8" BorderThickness="1" FontSize="14"/>
+                <StackPanel Orientation="Horizontal" Grid.Row="4" Margin="0,15,0,0">
+                    <Button Content="Нова нотатка" Click="SaveNoteButton_Click" Background="#10B981"/>
+                    <Button Content="Зберегти зміни" Click="UpdateNoteButton_Click" Background="#6366F1"/>
+                    <Button Content="Видалити" Click="DeleteNoteButton_Click" Background="#EF4444"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

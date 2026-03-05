@@ -1,0 +1,29 @@
+# Build results
+bin/
+obj/
+
+# Visual Studio cache/options
+.vs/
+
+# Build output
+*.dll
+*.exe
+*.pdb
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+
+# NuGet
+*.nupkg
+*.nuspec
+*.lock.json
+
+# IDE specific files
+.vscode/
+.idea/
+
+# OS specific
+.DS_Store
+Thumbs.db

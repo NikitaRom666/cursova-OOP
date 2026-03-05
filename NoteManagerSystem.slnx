@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="NoteManager.Tests/NoteManager.Tests.csproj" />
+  <Project Path="NoteManager/NoteManager.csproj" />
+</Solution>
