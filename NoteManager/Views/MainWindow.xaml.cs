@@ -5,7 +5,7 @@ using NoteManager.Models;
 namespace NoteManager.Views {
     public partial class MainWindow : Window {
         private NoteController _controller = new NoteController();
-        private Note _selectedNote;
+        private Note? _selectedNote;
         public MainWindow() {
             InitializeComponent(); _controller.DataChanged += RefreshList; RefreshList();
         }

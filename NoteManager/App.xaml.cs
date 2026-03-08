@@ -1,5 +1,4 @@
-using System.Windows;
-namespace NoteManager
-{
+﻿using System.Windows;
+namespace NoteManager {
     public partial class App : Application { }
 }

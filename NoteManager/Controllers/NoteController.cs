@@ -4,7 +4,7 @@ using NoteManager.Models;
 namespace NoteManager.Controllers {
     public class NoteController {
         private NoteCollection _noteCollection = NoteCollection.Instance;
-        public event Action DataChanged;
+        public event Action? DataChanged;
 
         public void CreateNote(string title, string content, string tagsStr) {
             var note = new Note(title, content); UpdateTags(note, tagsStr);
