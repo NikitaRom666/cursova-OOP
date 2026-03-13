@@ -1,33 +1,106 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
-using NoteManager.Controllers;
 using NoteManager.Models;
-namespace NoteManager.Views {
-    public partial class MainWindow : Window {
+using NoteManager.Controllers;
+
+namespace NoteManager
+{
+    public partial class MainWindow : Window
+    {
         private NoteController _controller = new NoteController();
-        private Note? _selectedNote;
-        public MainWindow() {
-            InitializeComponent(); _controller.DataChanged += RefreshList; RefreshList();
+        private ISortStrategy _currentStrategy = new SortByDate();
+        private string _searchQuery = "";
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            _controller.DataChanged += RefreshList;
+            RefreshList();
         }
-        private void RefreshList() { NotesList.ItemsSource = null; NotesList.ItemsSource = _controller.GetAllNotes(); }
-        private void SaveNoteButton_Click(object sender, RoutedEventArgs e) { _controller.CreateNote(TitleBox.Text, ContentBox.Text, TagsBox.Text); ClearFields(); }
-        private void UpdateNoteButton_Click(object sender, RoutedEventArgs e) {
-            if (_selectedNote != null) { _controller.UpdateNote(_selectedNote, TitleBox.Text, ContentBox.Text, TagsBox.Text); MessageBox.Show("Зміни збережено!"); }
+
+        private void RefreshList()
+        {
+            var notes = _controller.GetNotes(_searchQuery, _currentStrategy).ToList();
+            NotesList.ItemsSource = notes;
         }
-        private void DeleteNoteButton_Click(object sender, RoutedEventArgs e) {
-            if (_selectedNote != null && MessageBox.Show("Видалити нотатку?", "Підтвердження", MessageBoxButton.YesNo) == MessageBoxResult.Yes) {
-                _controller.DeleteNote(_selectedNote); ClearFields();
+
+        private void NewNoteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var tags = TagsInput.Text.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                   .Select(t => t.Trim()).ToList();
+            _controller.CreateNewNote(TitleInput.Text, ContentInput.Text, tags);
+            ClearInputs();
+        }
+
+        private void SaveNoteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (NotesList.SelectedItem is Note selectedNote)
+            {
+                var tags = TagsInput.Text.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                       .Select(t => t.Trim()).ToList();
+                _controller.UpdateNote(selectedNote, TitleInput.Text, ContentInput.Text, tags);
             }
         }
-        private void NotesList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            _selectedNote = NotesList.SelectedItem as Note;
-            if (_selectedNote != null) {
-                TitleBox.Text = _selectedNote.Title; ContentBox.Text = _selectedNote.Content; TagsBox.Text = string.Join(", ", _selectedNote.Tags);
+
+        private void DeleteNoteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (NotesList.SelectedItem is Note selectedNote)
+            {
+                _controller.DeleteNote(selectedNote);
+                ClearInputs();
             }
         }
-        private void SearchButton_Click(object sender, RoutedEventArgs e) { NotesList.ItemsSource = _controller.SearchNotes(SearchBox.Text); }
-        private void SortTitleButton_Click(object sender, RoutedEventArgs e) => _controller.SetSorting(new SortByTitle());
-        private void SortDateButton_Click(object sender, RoutedEventArgs e) => _controller.SetSorting(new SortByDate());
-        private void ClearFields() { TitleBox.Clear(); ContentBox.Clear(); TagsBox.Clear(); _selectedNote = null; NotesList.SelectedItem = null; }
+
+        private void UndoButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (NotesList.SelectedItem is Note selectedNote)
+            {
+                _controller.UndoChanges(selectedNote);
+                UpdateInputs(selectedNote);
+            }
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            _searchQuery = SearchInput.Text;
+            RefreshList();
+        }
+
+        private void SortTitleButton_Click(object sender, RoutedEventArgs e)
+        {
+            _currentStrategy = new SortByTitle();
+            RefreshList();
+        }
+
+        private void SortDateButton_Click(object sender, RoutedEventArgs e)
+        {
+            _currentStrategy = new SortByDate();
+            RefreshList();
+        }
+
+        private void NotesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (NotesList.SelectedItem is Note selectedNote)
+            {
+                UpdateInputs(selectedNote);
+            }
+        }
+
+        private void UpdateInputs(Note note)
+        {
+            TitleInput.Text = note.Title;
+            ContentInput.Text = note.Content;
+            TagsInput.Text = string.Join(", ", note.Tags);
+        }
+
+        private void ClearInputs()
+        {
+            TitleInput.Text = "";
+            ContentInput.Text = "";
+            TagsInput.Text = "";
+        }
     }
 }

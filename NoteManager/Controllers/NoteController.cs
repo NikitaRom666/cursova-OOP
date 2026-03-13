@@ -1,27 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
 using NoteManager.Models;
-namespace NoteManager.Controllers {
-    public class NoteController {
-        private NoteCollection _noteCollection = NoteCollection.Instance;
+
+namespace NoteManager.Controllers
+{
+    public class NoteController
+    {
+        private NoteStore _store = NoteStore.Instance;
+        private Dictionary<Guid, Stack<NoteMemento>> _history = new Dictionary<Guid, Stack<NoteMemento>>();
+
         public event Action? DataChanged;
 
-        public void CreateNote(string title, string content, string tagsStr) {
-            var note = new Note(title, content); UpdateTags(note, tagsStr);
-            _noteCollection.AddNote(note); DataChanged?.Invoke();
-        }
-        public void UpdateNote(Note note, string title, string content, string tagsStr) {
-            if (note == null) return;
-            note.Title = title; note.Content = content; UpdateTags(note, tagsStr);
+        public void CreateNewNote(string title, string content, List<string> tags)
+        {
+            var note = new Note(title, content) { Tags = new HashSet<string>(tags) };
+            _store.AddNote(note);
             DataChanged?.Invoke();
         }
-        public void DeleteNote(Note note) { _noteCollection.DeleteNote(note); DataChanged?.Invoke(); }
-        private void UpdateTags(Note note, string tagsStr) {
-            note.Tags = new List<string>(tagsStr.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
-            for(int i=0; i<note.Tags.Count; i++) note.Tags[i] = note.Tags[i].Trim();
+
+        public void UpdateNote(Note note, string title, string content, List<string> tags)
+        {
+            if (!_history.ContainsKey(note.Id))
+                _history[note.Id] = new Stack<NoteMemento>();
+
+            _history[note.Id].Push(note.CreateMemento());
+
+            note.Title = title;
+            note.Content = content;
+            note.Tags = new HashSet<string>(tags);
+            DataChanged?.Invoke();
         }
-        public List<Note> GetAllNotes() => _noteCollection.GetSortedNotes();
-        public List<Note> SearchNotes(string query) => string.IsNullOrWhiteSpace(query) ? GetAllNotes() : _noteCollection.Search(query);
-        public void SetSorting(ISortStrategy strategy) { _noteCollection.SetSortStrategy(strategy); DataChanged?.Invoke(); }
+
+        public void UndoChanges(Note note)
+        {
+            if (_history.ContainsKey(note.Id) && _history[note.Id].Count > 0)
+            {
+                var memento = _history[note.Id].Pop();
+                note.RestoreMemento(memento);
+                DataChanged?.Invoke();
+            }
+        }
+
+        public void DeleteNote(Note note) => _store.RemoveNote(note);
+
+        public IEnumerable<Note> GetNotes(string query, ISortStrategy sortStrategy)
+        {
+            return sortStrategy.Sort(_store.Search(query));
+        }
     }
 }
