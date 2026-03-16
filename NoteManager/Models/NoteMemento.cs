@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NoteManager.Models
 {
@@ -6,13 +7,18 @@ namespace NoteManager.Models
     {
         public string Title { get; }
         public string Content { get; }
+        public string Category { get; }
         public HashSet<string> Tags { get; }
+        public DateTime SavedAt { get; } = DateTime.Now;
 
-        public NoteMemento(string title, string content, HashSet<string> tags)
+        public NoteMemento(string title, string content, string category, HashSet<string> tags)
         {
             Title = title;
             Content = content;
+            Category = category;
             Tags = new HashSet<string>(tags);
         }
     }
 }
+
+

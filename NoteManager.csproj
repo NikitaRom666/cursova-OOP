@@ -5,5 +5,6 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <DefaultItemExcludes>$(DefaultItemExcludes);NoteManager.Tests\**</DefaultItemExcludes>
   </PropertyGroup>
 </Project>

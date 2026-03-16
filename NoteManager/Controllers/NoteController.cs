@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NoteManager.Models;
+using NoteManager.Services;
+using NoteManager.Services.Strategies;
 
 namespace NoteManager.Controllers
 {
     public class NoteController
     {
         private NoteStore _store = NoteStore.Instance;
-        private Dictionary<Guid, Stack<NoteMemento>> _history = new Dictionary<Guid, Stack<NoteMemento>>();
+        private Dictionary<Guid, Stack<NoteMemento>> _history = new();
 
         public event Action? DataChanged;
 
         public void CreateNewNote(string title, string content, List<string> tags)
         {
-            var note = new Note(title, content) { Tags = new HashSet<string>(tags) };
+            var note = NoteFactory.CreateWithTags(title, content, tags);
             _store.AddNote(note);
             DataChanged?.Invoke();
         }
@@ -25,10 +28,17 @@ namespace NoteManager.Controllers
 
             _history[note.Id].Push(note.CreateMemento());
 
-            note.Title = title;
+            note.Title   = title;
             note.Content = content;
-            note.Tags = new HashSet<string>(tags);
+            note.Tags    = new HashSet<string>(tags);
             DataChanged?.Invoke();
+        }
+
+        public List<NoteMemento> GetHistory(Note note)
+        {
+            if (_history.ContainsKey(note.Id))
+                return _history[note.Id].ToList();
+            return new List<NoteMemento>();
         }
 
         public void UndoChanges(Note note)
@@ -41,11 +51,15 @@ namespace NoteManager.Controllers
             }
         }
 
-        public void DeleteNote(Note note) => _store.RemoveNote(note);
+        public void DeleteNote(Note note)
+        {
+            _store.DeleteNote(note.Id);
+            DataChanged?.Invoke();
+        }
 
         public IEnumerable<Note> GetNotes(string query, ISortStrategy sortStrategy)
-        {
-            return sortStrategy.Sort(_store.Search(query));
-        }
+            => sortStrategy.Sort(_store.Search(query).ToList());
     }
 }
+
+

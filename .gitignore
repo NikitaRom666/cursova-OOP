@@ -27,3 +27,17 @@ obj/
 # OS specific
 .DS_Store
 Thumbs.db
+
+# Coverage reports
+coverage-report/
+NoteManager.Tests/TestResults/
+
+# Notes data (personal)
+notes.json
+notes_export.txt
+save_called.txt
+save_error.txt
+log.txt
+
+# Temp files
+uml_diagram.md
