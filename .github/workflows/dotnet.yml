@@ -9,27 +9,26 @@ jobs:
     runs-on: windows-latest 
 
     steps:
-    - name: Checkout repository
+    - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Setup .NET 6.0
+    - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '6.0.x' 
 
-    - name: Restore dependencies
-      run: dotnet restore NoteManager.csproj
-
-    - name: Build project
-      run: dotnet build NoteManager.csproj --configuration Release --no-restore
+    - name: Build Project
+      # Звертаємося прямо в папку з реальною програмою
+      run: dotnet build NoteManager/NoteManager.csproj -c Release
 
     - name: Run Unit Tests
-      run: dotnet test NoteManager.Tests --configuration Release
+      # Звертаємося прямо в папку з тестами
+      run: dotnet test NoteManager.Tests/NoteManager.Tests.csproj -c Release
 
     - name: Publish Application
-      run: dotnet publish NoteManager.csproj -c Release -o ./publish
+      run: dotnet publish NoteManager/NoteManager.csproj -c Release -o ./publish
 
-    - name: Upload Build Artifact
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: NoteManager-App
