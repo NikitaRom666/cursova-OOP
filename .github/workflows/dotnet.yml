@@ -1,0 +1,42 @@
+name: .NET WPF CI/CD
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    # Обов'язково Windows, бо WPF програми не збираються на Linux
+    runs-on: windows-latest 
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.x' 
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build project
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run Unit Tests
+      # Цей крок автоматично запустить твої тести з NoteManager.Tests
+      run: dotnet test --configuration Release --no-build --verbosity normal
+
+    - name: Publish Application
+      # Створює готову папку з програмою
+      run: dotnet publish NoteManager/NoteManager.csproj -c Release -o ./publish
+
+    - name: Upload Build Artifact
+      # Завантажує готову програму на GitHub, щоб її можна було скачати
+      uses: actions/upload-artifact@v4
+      with:
+        name: NoteManager-App
+        path: ./publish
