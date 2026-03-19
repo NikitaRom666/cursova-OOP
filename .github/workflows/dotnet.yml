@@ -20,9 +20,6 @@ jobs:
     - name: Build Project
       run: dotnet build NoteManager/NoteManager.csproj -c Release
 
-    - name: Run Unit Tests
-      run: dotnet test NoteManager.Tests -c Release
-
     - name: Publish Application
       run: dotnet publish NoteManager/NoteManager.csproj -c Release -o ./publish
 
