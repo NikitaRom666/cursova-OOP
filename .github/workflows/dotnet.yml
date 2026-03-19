@@ -3,8 +3,6 @@ name: .NET WPF CI/CD
 on:
   push:
     branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
 
 jobs:
   build:
@@ -20,13 +18,13 @@ jobs:
         dotnet-version: '6.0.x' 
 
     - name: Restore dependencies
-      run: dotnet restore NoteManagerSystem.sln
+      run: dotnet restore NoteManager.csproj
 
     - name: Build project
-      run: dotnet build NoteManagerSystem.sln --configuration Release --no-restore
+      run: dotnet build NoteManager.csproj --configuration Release --no-restore
 
     - name: Run Unit Tests
-      run: dotnet test NoteManagerSystem.sln --configuration Release --no-build --verbosity normal
+      run: dotnet test NoteManager.Tests --configuration Release
 
     - name: Publish Application
       run: dotnet publish NoteManager.csproj -c Release -o ./publish
