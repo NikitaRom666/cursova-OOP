@@ -1,4 +1,4 @@
-name: .NET WPF CI/CD
+﻿name: .NET WPF CI/CD
 
 on:
   push:
@@ -21,7 +21,6 @@ jobs:
       run: dotnet build NoteManager/NoteManager.csproj -c Release
 
     - name: Run Unit Tests
-      # Замість точної назви файлу, просто вказуємо папку. Сервер сам усе знайде.
       run: dotnet test NoteManager.Tests -c Release
 
     - name: Publish Application
